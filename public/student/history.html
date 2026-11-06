@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order History | Quesless Campus — MRECW</title>
+  
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/student.css">
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/student/dashboard.html" class="brand-wrapper">
+        <div class="brand-logo-badge">QC</div>
+        <div class="brand-info">
+          <span class="brand-name">Quesless Campus</span>
+          <span class="brand-subtext">MRECW Student Portal</span>
+        </div>
+      </a>
+
+      <nav aria-label="Student Navigation">
+        <ul class="nav-menu">
+          <li><a href="/student/dashboard.html" class="nav-link">Dashboard</a></li>
+          <li><a href="/student/menu.html" class="nav-link">Order Food</a></li>
+          <li><a href="/student/history.html" class="nav-link active">Order History</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <button id="signout-btn" class="btn btn-secondary btn-sm">Sign Out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content" style="padding: var(--spacing-8) 0;">
+    <div class="container">
+      
+      <div class="flex items-center justify-between" style="margin-bottom: var(--spacing-6); flex-wrap: wrap; gap: var(--spacing-4);">
+        <div>
+          <h1 style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: #0f172a;">My Order History</h1>
+          <p class="text-muted">Itemized receipts, digital token records, and preparation statuses.</p>
+        </div>
+        <a href="/student/menu.html" class="btn btn-primary btn-sm">+ Place New Order</a>
+      </div>
+
+      <div class="card">
+        <div class="card-body" style="padding: 0;">
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: var(--font-size-sm);">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--color-border); background: #f8fafc;">
+                  <th style="padding: var(--spacing-3) var(--spacing-4);">Token #</th>
+                  <th style="padding: var(--spacing-3) var(--spacing-4);">Shop</th>
+                  <th style="padding: var(--spacing-3) var(--spacing-4);">Date & Time</th>
+                  <th style="padding: var(--spacing-3) var(--spacing-4);">Items</th>
+                  <th style="padding: var(--spacing-3) var(--spacing-4);">Total (INR)</th>
+                  <th style="padding: var(--spacing-3) var(--spacing-4);">Payment</th>
+                  <th style="padding: var(--spacing-3) var(--spacing-4); text-align: right;">Status</th>
+                </tr>
+              </thead>
+              <tbody id="history-table-body">
+                <tr>
+                  <td colspan="7" class="text-center text-muted" style="padding: var(--spacing-8);">Loading order history...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="toast-container"></div>
+
+  <script src="/js/config.js"></script>
+  <script type="module" src="/js/common.js"></script>
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module">
+    import { requireAuth, signOutUser } from '/js/auth.js';
+    import { formatINR, formatKolkataTime, renderStatusBadge } from '/js/common.js';
+
+    await requireAuth(['student']);
+
+    document.getElementById('signout-btn').addEventListener('click', () => {
+      signOutUser();
+    });
+
+    async function loadHistory() {
+      const tbody = document.getElementById('history-table-body');
+      try {
+        const res = await fetch('/api/v1/orders/my');
+        const json = await res.json();
+        if (json.success && json.data) {
+          const orders = json.data;
+          if (orders.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted" style="padding: var(--spacing-8);">You have not placed any orders yet.</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = orders.map(order => {
+            const itemsStr = (order.items || []).map(i => `${i.quantity}x ${i.item_name_snapshot}`).join(', ');
+            return `
+              <tr style="border-bottom: 1px solid var(--color-border);">
+                <td style="padding: var(--spacing-3) var(--spacing-4); font-weight: bold; color: var(--color-primary-dark);">
+                  #${order.token_number}
+                </td>
+                <td style="padding: var(--spacing-3) var(--spacing-4); font-weight: 600;">
+                  ${order.shop_name}
+                </td>
+                <td style="padding: var(--spacing-3) var(--spacing-4); font-size: 12px; color: var(--color-text-muted);">
+                  ${formatKolkataTime(order.created_at)}
+                </td>
+                <td style="padding: var(--spacing-3) var(--spacing-4); max-width: 250px;">
+                  <span class="text-truncate" style="display: block;">${itemsStr}</span>
+                </td>
+                <td style="padding: var(--spacing-3) var(--spacing-4); font-weight: bold;">
+                  ${formatINR(order.total_paise)}
+                </td>
+                <td style="padding: var(--spacing-3) var(--spacing-4);">
+                  <span class="badge ${order.payment_method === 'online' ? 'badge-info' : 'badge-neutral'}">
+                    ${order.payment_method === 'online' ? 'Online Paid' : 'Counter Cash'}
+                  </span>
+                </td>
+                <td style="padding: var(--spacing-3) var(--spacing-4); text-align: right;">
+                  ${renderStatusBadge(order.status)}
+                  ${order.rejection_reason ? `<div style="font-size: 10px; color: #dc2626; margin-top: 2px;">Reason: ${order.rejection_reason}</div>` : ''}
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
+      } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-danger" style="padding: var(--spacing-8);">Failed to load history.</td></tr>';
+      }
+    }
+
+    loadHistory();
+  </script>
+</body>
+</html>

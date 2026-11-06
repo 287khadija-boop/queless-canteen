@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Kitchen Portal | Quesless Campus — MRECW</title>
+  
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+</head>
+<body style="background-color: #f1f5f9;">
+
+  <!-- Header -->
+  <header class="site-header" style="border-bottom: 2px solid var(--color-primary);">
+    <div class="container header-inner">
+      <div class="brand-wrapper">
+        <div class="brand-logo-badge" style="background: #1e293b;">KP</div>
+        <div class="brand-info">
+          <span class="brand-name">Canteen Kitchen Queue</span>
+          <span class="brand-subtext">MRECW Staff Order Processing Station</span>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <span class="badge badge-success">● Station Online</span>
+        <button id="signout-btn" class="btn btn-secondary btn-sm">Sign Out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content" style="padding: var(--spacing-6) 0;">
+    <div class="container">
+      
+      <!-- Kitchen Status Banner -->
+      <div class="flex items-center justify-between" style="margin-bottom: var(--spacing-6); flex-wrap: wrap; gap: var(--spacing-4);">
+        <div>
+          <h1 style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold);">Kitchen Order Pipeline</h1>
+          <p class="text-muted">Accept incoming tokens, progress cooking, and signal ready for pickup.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="refresh-btn" class="btn btn-outline btn-sm">🔄 Refresh Orders</button>
+          <span class="badge badge-info" id="active-queue-count">0 Orders in Queue</span>
+        </div>
+      </div>
+
+      <!-- Kitchen Columns: Incoming, Preparing, Ready -->
+      <div class="grid-3">
+        <!-- Column 1: Incoming Placed -->
+        <div class="card">
+          <div class="card-header" style="background-color: var(--color-surface-muted);">
+            <h3 style="font-size: var(--font-size-sm); font-weight: var(--font-weight-bold);">1. INCOMING TOKENS</h3>
+            <span class="badge badge-info">0</span>
+          </div>
+          <div class="card-body" style="min-height: 300px; display: flex; align-items: center; justify-content: center; color: var(--color-text-muted);">
+            No pending incoming orders
+          </div>
+        </div>
+
+        <!-- Column 2: Preparing -->
+        <div class="card">
+          <div class="card-header" style="background-color: #fef3c7;">
+            <h3 style="font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); color: #92400e;">2. NOW COOKING</h3>
+            <span class="badge badge-warning">0</span>
+          </div>
+          <div class="card-body" style="min-height: 300px; display: flex; align-items: center; justify-content: center; color: var(--color-text-muted);">
+            No items currently on stovetop
+          </div>
+        </div>
+
+        <!-- Column 3: Ready for Collection -->
+        <div class="card">
+          <div class="card-header" style="background-color: #d1fae5;">
+            <h3 style="font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); color: #065f46;">3. READY FOR PICKUP</h3>
+            <span class="badge badge-success">0</span>
+          </div>
+          <div class="card-body" style="min-height: 300px; display: flex; align-items: center; justify-content: center; color: var(--color-text-muted);">
+            No orders awaiting student handover
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="toast-container"></div>
+
+  <script src="/js/config.js"></script>
+  <script type="module" src="/js/common.js"></script>
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module">
+    import { requireAuth, signOutUser } from '/js/auth.js';
+    import { showToast } from '/js/common.js';
+
+    // Protect route: staff and admin permitted
+    await requireAuth(['staff', 'admin']);
+
+    document.getElementById('signout-btn').addEventListener('click', () => {
+      signOutUser();
+    });
+
+    document.getElementById('refresh-btn').addEventListener('click', () => {
+      showToast('Live Kitchen Queue synchronizing with Supabase Realtime in Phase 4...', 'info');
+    });
+  </script>
+</body>
+</html>

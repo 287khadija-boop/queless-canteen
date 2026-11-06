@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Console | Quesless Campus — MRECW</title>
+  
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header class="site-header" style="border-bottom: 2px solid #3b82f6;">
+    <div class="container header-inner">
+      <div class="brand-wrapper">
+        <div class="brand-logo-badge" style="background: #1e3a8a;">AD</div>
+        <div class="brand-info">
+          <span class="brand-name">Quesless Campus Admin</span>
+          <span class="brand-subtext">Malla Reddy Engineering College for Women</span>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <span class="badge badge-info">Administrator</span>
+        <button id="signout-btn" class="btn btn-secondary btn-sm">Sign Out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content" style="padding: var(--spacing-8) 0;">
+    <div class="container">
+      
+      <div class="flex items-center justify-between" style="margin-bottom: var(--spacing-8); flex-wrap: wrap; gap: var(--spacing-4);">
+        <div>
+          <h1 style="font-size: var(--font-size-3xl); font-weight: var(--font-weight-bold);">Campus Multi-Shop Control Center</h1>
+          <p class="text-muted">Platform-wide control over 5 campus shops, queue limits, revenue, and owner access.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="badge badge-success">5 Outlets Online</span>
+          <button id="admin-refresh-btn" class="btn btn-outline btn-sm">🔄 Refresh Analytics</button>
+        </div>
+      </div>
+
+      <!-- Key Performance Indicators -->
+      <div class="grid-4" style="margin-bottom: var(--spacing-8);">
+        <div class="card card-hover">
+          <div class="card-body">
+            <span class="text-muted" style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); text-transform: uppercase;">Total Platform Sales</span>
+            <div id="stat-platform-revenue" style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); margin: var(--spacing-2) 0; color: var(--color-primary-dark);">₹0.00</div>
+            <span class="badge badge-success" style="font-size: 11px;">Cross-Shop Settled</span>
+          </div>
+        </div>
+
+        <div class="card card-hover">
+          <div class="card-body">
+            <span class="text-muted" style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); text-transform: uppercase;">Campus Outlets</span>
+            <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); margin: var(--spacing-2) 0; color: var(--color-info);">5 Active</div>
+            <span class="badge badge-info" style="font-size: 11px;">100% Operational</span>
+          </div>
+        </div>
+
+        <div class="card card-hover">
+          <div class="card-body">
+            <span class="text-muted" style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); text-transform: uppercase;">Total Pre-Orders</span>
+            <div id="stat-platform-orders" style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); margin: var(--spacing-2) 0; color: var(--color-warning);">0</div>
+            <span class="badge badge-neutral" style="font-size: 11px;">Today's Inflow</span>
+          </div>
+        </div>
+
+        <div class="card card-hover">
+          <div class="card-body">
+            <span class="text-muted" style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); text-transform: uppercase;">Average Wait Time</span>
+            <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); margin: var(--spacing-2) 0; color: #059669;">~6-8 min</div>
+            <span class="badge badge-success" style="font-size: 11px;">Peak Queue Controlled</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Campus Outlets Management Table -->
+      <div class="card" style="margin-bottom: var(--spacing-8);">
+        <div class="card-header flex items-center justify-between">
+          <div>
+            <h2 style="font-size: var(--font-size-base); font-weight: var(--font-weight-bold);">Independent Campus Shops</h2>
+            <p class="text-muted" style="font-size: var(--font-size-xs);">Toggle student order acceptance, view queue capacities, and inspect dashboards.</p>
+          </div>
+          <span class="badge badge-neutral">Platform Governance</span>
+        </div>
+        <div class="card-body" style="padding: 0;">
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: var(--font-size-sm);">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--color-border); background: #f8fafc;">
+                  <th style="padding: var(--spacing-3) var(--spacing-4);">Shop Name</th>
+                  <th style="padding: var(--spacing-3) var(--spacing-4);">Code</th>
+                  <th style="padding: var(--spacing-3) var(--spacing-4);">Operating Hours</th>
+                  <th style="padding: var(--spacing-3) var(--spacing-4);">Max Capacity</th>
+                  <th style="padding: var(--spacing-3) var(--spacing-4);">Order Acceptance</th>
+                  <th style="padding: var(--spacing-3) var(--spacing-4); text-align: right;">Admin Control</th>
+                </tr>
+              </thead>
+              <tbody id="shops-admin-tbody">
+                <tr>
+                  <td colspan="6" class="text-center text-muted" style="padding: var(--spacing-8);">Loading campus shops...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Administrative Shortcuts -->
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-header">
+            <h3 style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold);">Shop Owner Dashboards</h3>
+            <span class="badge badge-info">Direct Access</span>
+          </div>
+          <div class="card-body">
+            <p class="text-muted" style="font-size: var(--font-size-sm); margin-bottom: var(--spacing-4);">
+              Inspect live kitchen pipelines for KBR Chicken, Dragon Hub, Brown Bear, Milkshakes, or Wraps.
+            </p>
+            <a href="/owner/dashboard.html" class="btn btn-outline btn-sm btn-block">Open Shop Owner Portal &rarr;</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold);">Financial Console</h3>
+            <span class="badge badge-success">Audits</span>
+          </div>
+          <div class="card-body">
+            <p class="text-muted" style="font-size: var(--font-size-sm); margin-bottom: var(--spacing-4);">
+              View reconciled payment summaries, cash registers, and online gateway settlements.
+            </p>
+            <a href="/accountant/dashboard.html" class="btn btn-outline btn-sm btn-block">Accounts Dashboard &rarr;</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold);">Student Experience</h3>
+            <span class="badge badge-neutral">Pre-Order</span>
+          </div>
+          <div class="card-body">
+            <p class="text-muted" style="font-size: var(--font-size-sm); margin-bottom: var(--spacing-4);">
+              Inspect the live student ordering flow, 5 shop menus, and digital token allocations.
+            </p>
+            <a href="/student/menu.html" class="btn btn-primary btn-sm btn-block">Browse Student Menus &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="toast-container"></div>
+
+  <script src="/js/config.js"></script>
+  <script type="module" src="/js/common.js"></script>
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module">
+    import { requireAuth, signOutUser } from '/js/auth.js';
+    import { showToast, formatINR } from '/js/common.js';
+
+    // Protect route: only admin permitted
+    await requireAuth(['admin']);
+
+    document.getElementById('signout-btn').addEventListener('click', () => {
+      signOutUser();
+    });
+
+    async function loadAdminData() {
+      try {
+        // Load Shops
+        const shopsRes = await fetch('/api/v1/admin/shops');
+        const shopsJson = await shopsRes.json();
+        if (shopsJson.success && shopsJson.data) {
+          renderShopsTable(shopsJson.data);
+        }
+
+        // Load Platform Analytics
+        const anaRes = await fetch('/api/v1/admin/analytics');
+        const anaJson = await anaRes.json();
+        if (anaJson.success && anaJson.data) {
+          document.getElementById('stat-platform-revenue').textContent = `₹${anaJson.data.total_platform_revenue_inr}`;
+          document.getElementById('stat-platform-orders').textContent = anaJson.data.total_platform_orders;
+        }
+      } catch (e) {
+        showToast('Error loading administrative data', 'error');
+      }
+    }
+
+    function renderShopsTable(shops) {
+      const tbody = document.getElementById('shops-admin-tbody');
+      tbody.innerHTML = shops.map(shop => `
+        <tr style="border-bottom: 1px solid var(--color-border);">
+          <td style="padding: var(--spacing-3) var(--spacing-4); font-weight: bold;">
+            ${shop.name}
+          </td>
+          <td style="padding: var(--spacing-3) var(--spacing-4); font-family: monospace;">
+            ${shop.shop_code || 'ORD'}
+          </td>
+          <td style="padding: var(--spacing-3) var(--spacing-4); color: var(--color-text-muted);">
+            09:00 AM – 04:00 PM
+          </td>
+          <td style="padding: var(--spacing-3) var(--spacing-4);">
+            ${shop.max_active_orders_capacity} orders
+          </td>
+          <td style="padding: var(--spacing-3) var(--spacing-4);">
+            <span class="badge ${shop.is_accepting_orders ? 'badge-success' : 'badge-danger'}">
+              ${shop.is_accepting_orders ? 'Accepting Orders' : 'Paused'}
+            </span>
+          </td>
+          <td style="padding: var(--spacing-3) var(--spacing-4); text-align: right;">
+            <button class="btn btn-outline btn-sm btn-toggle-shop" data-id="${shop.id}" data-active="${shop.is_accepting_orders}" style="font-size: 11px;">
+              ${shop.is_accepting_orders ? 'Pause Orders' : 'Resume Orders'}
+            </button>
+          </td>
+        </tr>
+      `).join('');
+
+      tbody.querySelectorAll('.btn-toggle-shop').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const shopId = e.target.dataset.id;
+          const currentActive = e.target.dataset.active === 'true';
+          btn.disabled = true;
+
+          try {
+            const res = await fetch(`/api/v1/admin/shops/${shopId}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ is_accepting_orders: !currentActive }),
+            });
+            const json = await res.json();
+            if (json.success) {
+              showToast(json.message, 'success');
+              loadAdminData();
+            } else {
+              showToast(json.error?.message || 'Update failed', 'error');
+              btn.disabled = false;
+            }
+          } catch {
+            showToast('Network error toggling shop', 'error');
+            btn.disabled = false;
+          }
+        });
+      });
+    }
+
+    document.getElementById('admin-refresh-btn').addEventListener('click', () => {
+      loadAdminData();
+      showToast('Analytics refreshed', 'info', 1000);
+    });
+
+    loadAdminData();
+  </script>
+</body>
+</html>

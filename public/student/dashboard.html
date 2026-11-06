@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Portal | Quesless Campus — MRECW</title>
+  
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/student.css">
+  <style>
+    .order-status-stepper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: var(--spacing-4) 0;
+      position: relative;
+    }
+    .order-status-stepper::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: #e2e8f0;
+      z-index: 1;
+    }
+    .step-node {
+      position: relative;
+      z-index: 2;
+      background: #ffffff;
+      padding: 0 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .step-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .step-node.active .step-circle {
+      background: var(--color-primary);
+      color: #ffffff;
+      box-shadow: 0 0 0 4px #d1fae5;
+    }
+    .step-node.done .step-circle {
+      background: var(--color-primary);
+      color: #ffffff;
+    }
+    .step-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+    }
+    .step-node.active .step-label {
+      color: var(--color-primary-dark);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/student/dashboard.html" class="brand-wrapper">
+        <div class="brand-logo-badge">QC</div>
+        <div class="brand-info">
+          <span class="brand-name">Quesless Campus</span>
+          <span class="brand-subtext">MRECW Student Portal</span>
+        </div>
+      </a>
+
+      <nav aria-label="Student Navigation">
+        <ul class="nav-menu">
+          <li><a href="/student/dashboard.html" class="nav-link active">Dashboard</a></li>
+          <li><a href="/student/menu.html" class="nav-link">Order Food</a></li>
+          <li><a href="/student/history.html" class="nav-link">Order History</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <span id="user-greeting" class="badge badge-info" style="font-size: var(--font-size-xs);">Loading...</span>
+        <button id="signout-btn" class="btn btn-secondary btn-sm">Sign Out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content" style="padding: var(--spacing-8) 0;">
+    <div class="container">
+      
+      <!-- Greeting & Active Queue Banner -->
+      <div class="flex items-center justify-between" style="margin-bottom: var(--spacing-6); flex-wrap: wrap; gap: var(--spacing-4);">
+        <div>
+          <h1 id="welcome-header" style="font-size: var(--font-size-3xl); font-weight: var(--font-weight-bold);">Welcome, Student</h1>
+          <p class="text-muted" id="user-meta-subtext">Roll Number: -- | MRECW Canteen Status: Open</p>
+        </div>
+        <div class="flex gap-2">
+          <button id="dashboard-refresh-btn" class="btn btn-outline btn-sm">🔄 Refresh Status</button>
+          <a href="/student/menu.html" class="btn btn-primary btn-md">Order Food Now &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Live Active Pre-Orders Section -->
+      <div style="margin-bottom: var(--spacing-8);">
+        <div class="flex items-center justify-between" style="margin-bottom: var(--spacing-3);">
+          <h2 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-bold);">My Active Digital Tokens & Pre-Orders</h2>
+          <span class="badge badge-neutral" id="active-tokens-count-badge">0 Active</span>
+        </div>
+
+        <div id="active-orders-container">
+          <div class="card">
+            <div class="card-body text-center" style="padding: var(--spacing-8) var(--spacing-4);">
+              <div style="font-size: 2.5rem; margin-bottom: var(--spacing-2);">🍽️</div>
+              <h3 style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); margin-bottom: var(--spacing-1);">No Active Orders Right Now</h3>
+              <p class="text-muted" style="font-size: var(--font-size-sm); margin-bottom: var(--spacing-4);">Browse our 5 campus shops to pre-order food and avoid queues.</p>
+              <a href="/student/menu.html" class="btn btn-primary btn-sm">Browse Canteen Shops</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Explore Canteen Shops Cards -->
+      <div style="margin-bottom: var(--spacing-8);">
+        <div class="flex items-center justify-between" style="margin-bottom: var(--spacing-4);">
+          <h2 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-bold);">Explore MRECW Campus Outlets</h2>
+          <a href="/student/menu.html" class="btn btn-outline btn-sm">View All Menus &rarr;</a>
+        </div>
+
+        <div class="grid-3" id="student-shops-grid">
+          <!-- Populated dynamically via /api/v1/shops -->
+        </div>
+      </div>
+
+      <!-- Canteen Hours & Queue Info -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h3 style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold);">Campus Canteen Hours</h3>
+            <span class="badge badge-success">Open Today</span>
+          </div>
+          <div class="card-body">
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: var(--spacing-3); font-size: var(--font-size-sm);">
+              <li class="flex items-center justify-between">
+                <span class="text-muted">Breakfast Serving:</span>
+                <span class="font-semibold">09:00 AM – 11:30 AM</span>
+              </li>
+              <li class="flex items-center justify-between">
+                <span class="text-muted">Lunch Peak Hours:</span>
+                <span class="font-semibold">12:30 PM – 02:00 PM</span>
+              </li>
+              <li class="flex items-center justify-between">
+                <span class="text-muted">Snacks & Beverages:</span>
+                <span class="font-semibold">02:00 PM – 04:00 PM</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold);">Digital Token Pickup Instructions</h3>
+            <span class="badge badge-info">Zero Wait</span>
+          </div>
+          <div class="card-body" style="font-size: var(--font-size-sm); color: var(--color-text-muted); line-height: 1.6;">
+            1. Pre-order from your phone before class break.<br>
+            2. When your token is marked <strong>Ready for Pickup</strong>, proceed to Counter 1.<br>
+            3. Show your <strong>Token Number</strong> and <strong>Roll Number</strong> to pick up your tray without waiting!
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="toast-container"></div>
+
+  <script src="/js/config.js"></script>
+  <script type="module" src="/js/common.js"></script>
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module">
+    import { requireAuth, signOutUser } from '/js/auth.js';
+    import { showToast, formatINR, formatKolkataTime } from '/js/common.js';
+
+    // Protect route: student role permitted
+    const authState = await requireAuth(['student']);
+    if (authState) {
+      const { profile } = authState;
+      document.getElementById('welcome-header').textContent = `Welcome, ${profile.full_name || 'Student'}`;
+      document.getElementById('user-greeting').textContent = `Student: ${profile.college_identifier || profile.full_name}`;
+      document.getElementById('user-meta-subtext').textContent = 
+        `Roll Number: ${profile.college_identifier || 'Not set'} | MRECW Canteen Status: Open (09:00 - 16:00)`;
+    }
+
+    document.getElementById('signout-btn').addEventListener('click', () => {
+      signOutUser();
+    });
+
+    // Load Active Orders
+    async function loadActiveOrders() {
+      try {
+        const res = await fetch('/api/v1/orders/my');
+        const json = await res.json();
+        if (json.success && json.data) {
+          const allOrders = json.data;
+          // Active orders are: placed, accepted, preparing, ready
+          const activeOrders = allOrders.filter(o => ['placed', 'accepted', 'preparing', 'ready'].includes(o.status));
+          document.getElementById('active-tokens-count-badge').textContent = `${activeOrders.length} Active`;
+          renderActiveOrders(activeOrders);
+        }
+      } catch (e) {
+        console.error('Error loading orders', e);
+      }
+    }
+
+    function renderActiveOrders(orders) {
+      const container = document.getElementById('active-orders-container');
+      if (orders.length === 0) {
+        container.innerHTML = `
+          <div class="card">
+            <div class="card-body text-center" style="padding: var(--spacing-8) var(--spacing-4);">
+              <div style="font-size: 2.5rem; margin-bottom: var(--spacing-2);">🍽️</div>
+              <h3 style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); margin-bottom: var(--spacing-1);">No Active Orders Right Now</h3>
+              <p class="text-muted" style="font-size: var(--font-size-sm); margin-bottom: var(--spacing-4);">Browse our 5 campus shops to pre-order food and avoid queues.</p>
+              <a href="/student/menu.html" class="btn btn-primary btn-sm">Browse Canteen Shops</a>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = orders.map(order => {
+        const statusMap = {
+          placed:    { step: 1, label: 'Order Placed', badge: 'badge-warning' },
+          accepted:  { step: 2, label: 'Accepted by Kitchen', badge: 'badge-info' },
+          preparing: { step: 3, label: 'Now Cooking', badge: 'badge-warning' },
+          ready:     { step: 4, label: 'Ready for Instant Pickup!', badge: 'badge-success' },
+        };
+        const currentMeta = statusMap[order.status] || { step: 1, label: order.status, badge: 'badge-neutral' };
+
+        const itemsList = (order.items || []).map(i => `${i.quantity}x ${i.item_name_snapshot}`).join(', ');
+
+        return `
+          <div class="card" style="margin-bottom: var(--spacing-4); border: 2px solid ${order.status === 'ready' ? '#059669' : 'var(--color-border)'};">
+            <div class="card-header flex items-center justify-between" style="background: ${order.status === 'ready' ? '#ecfdf5' : 'var(--color-surface-muted)'};">
+              <div class="flex items-center gap-3">
+                <span style="font-size: 1.5rem; font-weight: 900; color: #065f46; background: #ffffff; padding: 4px 12px; border-radius: var(--radius-md); border: 1px solid #a7f3d0;">
+                  Token #${order.token_number}
+                </span>
+                <div>
+                  <h3 style="font-size: var(--font-size-base); font-weight: var(--font-weight-bold);">${order.shop_name}</h3>
+                  <div class="text-muted" style="font-size: 11px;">Placed: ${formatKolkataTime(order.created_at)}</div>
+                </div>
+              </div>
+              <span class="badge ${currentMeta.badge}">${currentMeta.label}</span>
+            </div>
+
+            <div class="card-body">
+              <!-- Visual Progress Stepper -->
+              <div class="order-status-stepper">
+                <div class="step-node ${currentMeta.step >= 1 ? 'done' : ''} ${currentMeta.step === 1 ? 'active' : ''}">
+                  <div class="step-circle">1</div>
+                  <div class="step-label">Placed</div>
+                </div>
+                <div class="step-node ${currentMeta.step >= 2 ? 'done' : ''} ${currentMeta.step === 2 ? 'active' : ''}">
+                  <div class="step-circle">2</div>
+                  <div class="step-label">Accepted</div>
+                </div>
+                <div class="step-node ${currentMeta.step >= 3 ? 'done' : ''} ${currentMeta.step === 3 ? 'active' : ''}">
+                  <div class="step-circle">3</div>
+                  <div class="step-label">Cooking</div>
+                </div>
+                <div class="step-node ${currentMeta.step >= 4 ? 'done' : ''} ${currentMeta.step === 4 ? 'active' : ''}">
+                  <div class="step-circle">4</div>
+                  <div class="step-label">Ready</div>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between" style="font-size: var(--font-size-sm); margin-top: var(--spacing-3);">
+                <div><strong>Items:</strong> <span class="text-muted">${itemsList}</span></div>
+                <div><strong>Total:</strong> <span style="color: var(--color-primary-dark); font-weight: bold;">${formatINR(order.total_paise)}</span> (${order.payment_method === 'online' ? 'Paid' : 'Pay at Counter'})</div>
+              </div>
+
+              ${order.status === 'placed' ? `
+                <div class="flex justify-end" style="margin-top: var(--spacing-3);">
+                  <button class="btn btn-outline btn-sm btn-cancel-order" data-id="${order.id}" style="font-size: 11px; color: #dc2626; border-color: #fca5a5;">
+                    Cancel Pre-Order
+                  </button>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Cancellation listener
+      container.querySelectorAll('.btn-cancel-order').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const orderId = e.target.dataset.id;
+          if (!confirm('Are you sure you want to cancel this pre-order?')) return;
+          btn.disabled = true;
+          try {
+            const res = await fetch(`/api/v1/orders/${orderId}/cancel`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ reason: 'Cancelled by student' }),
+            });
+            const json = await res.json();
+            if (json.success) {
+              showToast(json.message, 'info');
+              loadActiveOrders();
+            } else {
+              showToast(json.error?.message || 'Cancellation failed', 'error');
+              btn.disabled = false;
+            }
+          } catch {
+            showToast('Network error cancelling order', 'error');
+            btn.disabled = false;
+          }
+        });
+      });
+    }
+
+    // Load Campus Shops
+    async function loadShops() {
+      try {
+        const res = await fetch('/api/v1/shops');
+        const json = await res.json();
+        if (json.success && json.data) {
+          const container = document.getElementById('student-shops-grid');
+          container.innerHTML = json.data.map(shop => `
+            <div class="card card-hover" style="overflow: hidden; display: flex; flex-direction: column;">
+              <div style="height: 140px; overflow: hidden; background: #e2e8f0; position: relative;">
+                <img src="${shop.cover_image_url}" 
+                     alt="${shop.name}" 
+                     loading="lazy" 
+                     style="width: 100%; height: 100%; object-fit: cover;"
+                     onerror="window.Quesless?.handleFoodImageError(this, '${shop.name}')">
+                <span class="badge ${shop.is_accepting_orders ? 'badge-success' : 'badge-warning'}" style="position: absolute; top: 8px; right: 8px; font-size: 10px;">
+                  ${shop.is_accepting_orders ? 'Open' : 'Closed'}
+                </span>
+              </div>
+              <div class="card-body" style="flex: 1; display: flex; flex-direction: column;">
+                <h3 style="font-size: var(--font-size-base); font-weight: var(--font-weight-bold); margin-bottom: 4px;">${shop.name}</h3>
+                <p class="text-muted" style="font-size: 12px; margin-bottom: var(--spacing-3); flex: 1;">${shop.description}</p>
+                <a href="/student/menu.html?shop=${shop.id}" class="btn btn-primary btn-sm btn-block">Order From Shop &rarr;</a>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (e) {
+        console.error('Error loading shops', e);
+      }
+    }
+
+    document.getElementById('dashboard-refresh-btn').addEventListener('click', () => {
+      loadActiveOrders();
+      showToast('Status refreshed', 'info', 1000);
+    });
+
+    // Initial Load
+    await loadActiveOrders();
+    await loadShops();
+
+    // Auto-refresh active tokens every 8 seconds
+    setInterval(loadActiveOrders, 8000);
+  </script>
+</body>
+</html>

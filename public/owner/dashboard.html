@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop Owner Dashboard | Quesless Campus — MRECW</title>
+  
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <style>
+    .pipeline-col {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-border);
+      display: flex;
+      flex-direction: column;
+      min-height: 480px;
+    }
+    .pipeline-header {
+      padding: var(--spacing-4);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .pipeline-body {
+      padding: var(--spacing-3);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-3);
+      flex: 1;
+      overflow-y: auto;
+    }
+    .order-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-4);
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition-fast);
+    }
+    .order-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--color-primary);
+    }
+    .token-badge {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--color-primary-dark);
+      background: #ecfdf5;
+      padding: 4px 10px;
+      border-radius: var(--radius-md);
+      border: 1px solid #a7f3d0;
+    }
+    .nav-tab-btn {
+      padding: var(--spacing-2) var(--spacing-4);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      background: none;
+      cursor: pointer;
+      color: var(--color-text-muted);
+    }
+    .nav-tab-btn.active {
+      background: var(--color-primary);
+      color: #ffffff;
+    }
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-card {
+      background: #ffffff;
+      border-radius: var(--radius-xl);
+      padding: var(--spacing-6);
+      width: 100%;
+      max-width: 500px;
+      box-shadow: var(--shadow-lg);
+    }
+  </style>
+</head>
+<body style="background-color: #f8fafc;">
+
+  <!-- Header -->
+  <header class="site-header" style="border-bottom: 2px solid var(--color-primary);">
+    <div class="container header-inner">
+      <div class="brand-wrapper">
+        <div class="brand-logo-badge" style="background: #0f766e;">SO</div>
+        <div class="brand-info">
+          <span class="brand-name" id="shop-header-title">Shop Owner Portal</span>
+          <span class="brand-subtext" id="shop-header-subtext">MRECW Independent Canteen Outlet</span>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <span class="badge badge-success" id="shop-status-badge">● Open & Accepting Orders</span>
+        <button id="signout-btn" class="btn btn-secondary btn-sm">Sign Out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content" style="padding: var(--spacing-6) 0;">
+    <div class="container">
+      
+      <!-- Top Bar: Title, Tabs & Refresh -->
+      <div class="flex items-center justify-between" style="margin-bottom: var(--spacing-6); flex-wrap: wrap; gap: var(--spacing-4);">
+        <div>
+          <h1 id="shop-welcome-name" style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: #0f172a;">Shop Operations</h1>
+          <p class="text-muted" id="shop-owner-info">Logged in as: Shop Manager</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div style="background: #e2e8f0; padding: 4px; border-radius: var(--radius-lg); display: flex; gap: 4px;">
+            <button class="nav-tab-btn active" id="tab-btn-orders">Live Pipeline</button>
+            <button class="nav-tab-btn" id="tab-btn-menu">Manage Menu</button>
+            <button class="nav-tab-btn" id="tab-btn-analytics">Shop Analytics</button>
+          </div>
+          <button id="refresh-btn" class="btn btn-outline btn-sm">🔄 Refresh</button>
+        </div>
+      </div>
+
+      <!-- Live Metric Summary Cards -->
+      <div class="grid-4" style="margin-bottom: var(--spacing-6);">
+        <div class="card">
+          <div class="card-body">
+            <span class="text-muted" style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); text-transform: uppercase;">Awaiting Action</span>
+            <div id="stat-pending-count" style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); margin: var(--spacing-2) 0; color: #dc2626;">0</div>
+            <span class="badge badge-danger" style="font-size: 11px;">Requires Decision</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <span class="text-muted" style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); text-transform: uppercase;">In Preparation</span>
+            <div id="stat-preparing-count" style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); margin: var(--spacing-2) 0; color: #d97706;">0</div>
+            <span class="badge badge-warning" style="font-size: 11px;">Active on Stovetop</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <span class="text-muted" style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); text-transform: uppercase;">Ready for Pickup</span>
+            <div id="stat-ready-count" style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); margin: var(--spacing-2) 0; color: #059669;">0</div>
+            <span class="badge badge-success" style="font-size: 11px;">Awaiting Handover</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <span class="text-muted" style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); text-transform: uppercase;">Today's Verified Sales</span>
+            <div id="stat-sales-inr" style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); margin: var(--spacing-2) 0; color: #0f766e;">₹0.00</div>
+            <span class="badge badge-info" style="font-size: 11px;">Settled Orders</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 1: LIVE ORDERS PIPELINE -->
+      <div id="view-orders">
+        <div class="grid-4" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--spacing-4);">
+          
+          <!-- Column 1: Awaiting Decision (placed) -->
+          <div class="pipeline-col">
+            <div class="pipeline-header" style="background-color: #fee2e2;">
+              <div>
+                <strong style="color: #991b1b; font-size: var(--font-size-sm);">1. INCOMING ORDERS</strong>
+                <div class="text-muted" style="font-size: 11px;">Accept or Reject</div>
+              </div>
+              <span class="badge badge-danger" id="badge-col-placed">0</span>
+            </div>
+            <div class="pipeline-body" id="col-placed">
+              <div class="text-center text-muted" style="padding: var(--spacing-8);">No incoming orders awaiting decision.</div>
+            </div>
+          </div>
+
+          <!-- Column 2: Accepted & Preparing -->
+          <div class="pipeline-col">
+            <div class="pipeline-header" style="background-color: #fef3c7;">
+              <div>
+                <strong style="color: #92400e; font-size: var(--font-size-sm);">2. IN PREPARATION</strong>
+                <div class="text-muted" style="font-size: 11px;">Cooking in Kitchen</div>
+              </div>
+              <span class="badge badge-warning" id="badge-col-preparing">0</span>
+            </div>
+            <div class="pipeline-body" id="col-preparing">
+              <div class="text-center text-muted" style="padding: var(--spacing-8);">No orders currently being cooked.</div>
+            </div>
+          </div>
+
+          <!-- Column 3: Ready for Pickup -->
+          <div class="pipeline-col">
+            <div class="pipeline-header" style="background-color: #d1fae5;">
+              <div>
+                <strong style="color: #065f46; font-size: var(--font-size-sm);">3. READY FOR PICKUP</strong>
+                <div class="text-muted" style="font-size: 11px;">Call student to counter</div>
+              </div>
+              <span class="badge badge-success" id="badge-col-ready">0</span>
+            </div>
+            <div class="pipeline-body" id="col-ready">
+              <div class="text-center text-muted" style="padding: var(--spacing-8);">No orders awaiting collection.</div>
+            </div>
+          </div>
+
+          <!-- Column 4: Completed & Handed Over -->
+          <div class="pipeline-col">
+            <div class="pipeline-header" style="background-color: #f1f5f9;">
+              <div>
+                <strong style="color: #334155; font-size: var(--font-size-sm);">4. RECENTLY COMPLETED</strong>
+                <div class="text-muted" style="font-size: 11px;">Collected by student</div>
+              </div>
+              <span class="badge badge-neutral" id="badge-col-collected">0</span>
+            </div>
+            <div class="pipeline-body" id="col-collected">
+              <div class="text-center text-muted" style="padding: var(--spacing-8);">No completed orders today.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- VIEW 2: MENU MANAGEMENT -->
+      <div id="view-menu" style="display: none;">
+        <div class="card" style="margin-bottom: var(--spacing-6);">
+          <div class="card-header flex items-center justify-between">
+            <div>
+              <h2 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-bold);">Shop Menu Catalog</h2>
+              <p class="text-muted" style="font-size: var(--font-size-sm);">Manage dish availability, prices in ₹, stock counts, and new items.</p>
+            </div>
+            <button id="add-dish-btn" class="btn btn-primary btn-sm">+ Add New Dish</button>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <div style="overflow-x: auto;">
+              <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: var(--font-size-sm);">
+                <thead>
+                  <tr style="border-bottom: 2px solid var(--color-border); background: #f8fafc;">
+                    <th style="padding: var(--spacing-3) var(--spacing-4);">Dish</th>
+                    <th style="padding: var(--spacing-3) var(--spacing-4);">Category</th>
+                    <th style="padding: var(--spacing-3) var(--spacing-4);">Diet</th>
+                    <th style="padding: var(--spacing-3) var(--spacing-4);">Price (₹)</th>
+                    <th style="padding: var(--spacing-3) var(--spacing-4);">Stock</th>
+                    <th style="padding: var(--spacing-3) var(--spacing-4);">Availability</th>
+                    <th style="padding: var(--spacing-3) var(--spacing-4); text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="menu-table-body">
+                  <tr>
+                    <td colspan="7" class="text-center text-muted" style="padding: var(--spacing-8);">Loading menu items...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 3: SHOP ANALYTICS -->
+      <div id="view-analytics" style="display: none;">
+        <div class="grid-2" style="margin-bottom: var(--spacing-6);">
+          <div class="card">
+            <div class="card-header">
+              <h3 style="font-size: var(--font-size-base); font-weight: var(--font-weight-bold);">Popular Dishes</h3>
+            </div>
+            <div class="card-body" id="analytics-popular-body">
+              <div class="text-center text-muted">Calculating popularity metrics...</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 style="font-size: var(--font-size-base); font-weight: var(--font-weight-bold);">Operational Summary</h3>
+            </div>
+            <div class="card-body">
+              <ul style="list-style: none; display: flex; flex-direction: column; gap: var(--spacing-3); font-size: var(--font-size-sm);" id="analytics-ops-list">
+                <li class="flex items-center justify-between">
+                  <span class="text-muted">Total Orders Received:</span>
+                  <span class="font-bold" id="ana-total-orders">0</span>
+                </li>
+                <li class="flex items-center justify-between">
+                  <span class="text-muted">Total Completed:</span>
+                  <span class="font-bold text-success" id="ana-completed-orders">0</span>
+                </li>
+                <li class="flex items-center justify-between">
+                  <span class="text-muted">Rejected Orders:</span>
+                  <span class="font-bold text-danger" id="ana-rejected-orders">0</span>
+                </li>
+                <li class="flex items-center justify-between">
+                  <span class="text-muted">Verified Revenue:</span>
+                  <span class="font-bold" style="color: var(--color-primary-dark);" id="ana-revenue-inr">₹0.00</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- MODAL: REJECT ORDER -->
+  <div id="reject-modal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card">
+      <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-2); color: #dc2626;">Reject Order</h3>
+      <p class="text-muted" style="font-size: var(--font-size-sm); margin-bottom: var(--spacing-4);" id="reject-modal-subtext">
+        Please specify the reason for rejecting Order. The student will be notified immediately and any payments will be refunded.
+      </p>
+
+      <form id="reject-form">
+        <input type="hidden" id="reject-order-id">
+        <div class="form-group">
+          <label class="form-label">Predefined Reason</label>
+          <select id="reject-predefined" class="form-input">
+            <option value="Item temporarily out of stock">Item temporarily out of stock</option>
+            <option value="Preparation capacity reached for this break">Preparation capacity reached for this break</option>
+            <option value="Kitchen busy with large volume">Kitchen busy with large volume</option>
+            <option value="Shop closing soon for the day">Shop closing soon for the day</option>
+            <option value="Special request cannot be fulfilled">Special request cannot be fulfilled</option>
+            <option value="Other reason">Other reason (Type below)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Reason Explanation (Visible to Student)</label>
+          <textarea id="reject-reason-text" class="form-input" rows="3" required placeholder="Explain why the order cannot be prepared..."></textarea>
+        </div>
+
+        <div class="flex items-center justify-end gap-3" style="margin-top: var(--spacing-4);">
+          <button type="button" class="btn btn-secondary btn-sm" id="reject-cancel-btn">Back</button>
+          <button type="submit" class="btn btn-danger btn-sm" id="reject-confirm-btn">Confirm Rejection</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD DISH -->
+  <div id="add-dish-modal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card" style="max-width: 550px;">
+      <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-2);">Add New Dish</h3>
+      <p class="text-muted" style="font-size: var(--font-size-sm); margin-bottom: var(--spacing-4);">
+        Add a new food or beverage item to your shop's menu.
+      </p>
+
+      <form id="add-dish-form">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select id="dish-category" class="form-input" required></select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Dish Name</label>
+          <input type="text" id="dish-name" class="form-input" placeholder="e.g. Crispy Chicken Burger" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea id="dish-desc" class="form-input" rows="2" placeholder="Ingredients and flavor highlights..."></textarea>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Price in ₹ (Rupees)</label>
+            <input type="number" id="dish-price-rupees" class="form-input" min="5" step="1" placeholder="e.g. 85" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Initial Daily Stock</label>
+            <input type="number" id="dish-stock" class="form-input" min="0" value="50" required>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Dietary Type</label>
+            <select id="dish-diet" class="form-input">
+              <option value="true">Vegetarian</option>
+              <option value="false">Non-Vegetarian</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Est. Prep Minutes</label>
+            <input type="number" id="dish-prep-time" class="form-input" min="1" value="8" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Image URL (Optional)</label>
+          <input type="url" id="dish-image-url" class="form-input" placeholder="https://images.unsplash.com/...">
+        </div>
+
+        <div class="flex items-center justify-end gap-3" style="margin-top: var(--spacing-4);">
+          <button type="button" class="btn btn-secondary btn-sm" id="add-dish-cancel-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm" id="add-dish-submit-btn">Save Dish</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="/js/config.js"></script>
+  <script type="module" src="/js/common.js"></script>
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module">
+    import { requireAuth, signOutUser } from '/js/auth.js';
+    import { showToast, formatINR, formatKolkataTime } from '/js/common.js';
+
+    // Protect route: shop_owner and admin permitted
+    const authState = await requireAuth(['shop_owner', 'admin']);
+    if (!authState) {
+      window.location.href = '/login.html?role=shop_owner';
+    }
+
+    const { profile } = authState;
+    document.getElementById('shop-owner-info').textContent = 
+      `Manager: ${profile.full_name || 'Owner'} | Assigned: ${profile.assigned_shop_name || 'Campus Shop'}`;
+
+    let currentShop = null;
+    let shopCategories = [];
+    let currentOrders = [];
+
+    // Tab Switching
+    const tabBtnOrders = document.getElementById('tab-btn-orders');
+    const tabBtnMenu = document.getElementById('tab-btn-menu');
+    const tabBtnAnalytics = document.getElementById('tab-btn-analytics');
+    const viewOrders = document.getElementById('view-orders');
+    const viewMenu = document.getElementById('view-menu');
+    const viewAnalytics = document.getElementById('view-analytics');
+
+    function switchTab(activeTab) {
+      [tabBtnOrders, tabBtnMenu, tabBtnAnalytics].forEach(b => b.classList.remove('active'));
+      [viewOrders, viewMenu, viewAnalytics].forEach(v => v.style.display = 'none');
+
+      if (activeTab === 'orders') {
+        tabBtnOrders.classList.add('active');
+        viewOrders.style.display = 'block';
+        loadOrders();
+      } else if (activeTab === 'menu') {
+        tabBtnMenu.classList.add('active');
+        viewMenu.style.display = 'block';
+        loadMenu();
+      } else if (activeTab === 'analytics') {
+        tabBtnAnalytics.classList.add('active');
+        viewAnalytics.style.display = 'block';
+        loadAnalytics();
+      }
+    }
+
+    tabBtnOrders.addEventListener('click', () => switchTab('orders'));
+    tabBtnMenu.addEventListener('click', () => switchTab('menu'));
+    tabBtnAnalytics.addEventListener('click', () => switchTab('analytics'));
+
+    // Fetch Shop Profile
+    async function loadShopProfile() {
+      try {
+        const res = await fetch('/api/v1/owner/shop');
+        const json = await res.json();
+        if (json.success && json.data) {
+          currentShop = json.data;
+          document.getElementById('shop-header-title').textContent = currentShop.name;
+          document.getElementById('shop-header-subtext').textContent = currentShop.description || 'MRECW Canteen Outlet';
+          document.getElementById('shop-welcome-name').textContent = `${currentShop.name} — Live Queue`;
+        }
+      } catch (e) {
+        console.error('Failed to load shop details', e);
+      }
+    }
+
+    // Load Orders & Render Pipeline
+    async function loadOrders() {
+      try {
+        const res = await fetch('/api/v1/owner/orders');
+        const json = await res.json();
+        if (json.success) {
+          currentOrders = json.data || [];
+          renderPipeline(currentOrders);
+        }
+      } catch (e) {
+        showToast('Error refreshing orders', 'error');
+      }
+    }
+
+    function renderPipeline(orders) {
+      const colPlaced = document.getElementById('col-placed');
+      const colPreparing = document.getElementById('col-preparing');
+      const colReady = document.getElementById('col-ready');
+      const colCollected = document.getElementById('col-collected');
+
+      const placedOrders = orders.filter(o => o.status === 'placed');
+      const prepOrders = orders.filter(o => ['accepted', 'preparing'].includes(o.status));
+      const readyOrders = orders.filter(o => o.status === 'ready');
+      const collectedOrders = orders.filter(o => o.status === 'collected');
+
+      document.getElementById('badge-col-placed').textContent = placedOrders.length;
+      document.getElementById('badge-col-preparing').textContent = prepOrders.length;
+      document.getElementById('badge-col-ready').textContent = readyOrders.length;
+      document.getElementById('badge-col-collected').textContent = collectedOrders.length;
+
+      document.getElementById('stat-pending-count').textContent = placedOrders.length;
+      document.getElementById('stat-preparing-count').textContent = prepOrders.length;
+      document.getElementById('stat-ready-count').textContent = readyOrders.length;
+
+      // Update Verified Sales
+      const verifiedSales = orders
+        .filter(o => o.payment_status === 'paid' || o.status === 'collected')
+        .reduce((sum, o) => sum + o.total_paise, 0);
+      document.getElementById('stat-sales-inr').textContent = formatINR(verifiedSales);
+
+      // Render Col 1: Placed
+      colPlaced.innerHTML = placedOrders.length === 0
+        ? '<div class="text-center text-muted" style="padding: var(--spacing-8);">No incoming orders awaiting decision.</div>'
+        : placedOrders.map(o => renderOrderCard(o, 'placed')).join('');
+
+      // Render Col 2: Preparing
+      colPreparing.innerHTML = prepOrders.length === 0
+        ? '<div class="text-center text-muted" style="padding: var(--spacing-8);">No orders currently being cooked.</div>'
+        : prepOrders.map(o => renderOrderCard(o, 'preparing')).join('');
+
+      // Render Col 3: Ready
+      colReady.innerHTML = readyOrders.length === 0
+        ? '<div class="text-center text-muted" style="padding: var(--spacing-8);">No orders awaiting collection.</div>'
+        : readyOrders.map(o => renderOrderCard(o, 'ready')).join('');
+
+      // Render Col 4: Collected
+      colCollected.innerHTML = collectedOrders.length === 0
+        ? '<div class="text-center text-muted" style="padding: var(--spacing-8);">No completed orders today.</div>'
+        : collectedOrders.slice(0, 10).map(o => renderOrderCard(o, 'collected')).join('');
+
+      attachActionListeners();
+    }
+
+    function renderOrderCard(order, columnType) {
+      const itemsHtml = (order.items || []).map(i => `
+        <div class="flex items-center justify-between" style="font-size: 13px; padding: 2px 0;">
+          <span><strong>${i.quantity}x</strong> ${i.item_name_snapshot}</span>
+          <span class="text-muted">${formatINR(i.line_total_paise)}</span>
+        </div>
+      `).join('');
+
+      let actionButtons = '';
+      if (columnType === 'placed') {
+        actionButtons = `
+          <div class="flex gap-2" style="margin-top: var(--spacing-3);">
+            <button class="btn btn-primary btn-sm btn-accept" data-id="${order.id}" style="flex: 1;">✓ Accept</button>
+            <button class="btn btn-outline btn-sm btn-reject" data-id="${order.id}" data-num="${order.token_number}" style="flex: 1; border-color: #ef4444; color: #dc2626;">✕ Reject</button>
+          </div>
+        `;
+      } else if (columnType === 'preparing') {
+        const nextAction = order.status === 'accepted'
+          ? `<button class="btn btn-warning btn-sm btn-block btn-advance" data-id="${order.id}" data-status="preparing">🍳 Start Cooking</button>`
+          : `<button class="btn btn-success btn-sm btn-block btn-advance" data-id="${order.id}" data-status="ready">🔔 Mark Ready for Pickup</button>`;
+        actionButtons = `<div style="margin-top: var(--spacing-3);">${nextAction}</div>`;
+      } else if (columnType === 'ready') {
+        actionButtons = `
+          <div style="margin-top: var(--spacing-3);">
+            <button class="btn btn-primary btn-sm btn-block btn-advance" data-id="${order.id}" data-status="collected">🤝 Complete Handover</button>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="order-card" id="card-${order.id}">
+          <div class="flex items-center justify-between" style="margin-bottom: var(--spacing-2);">
+            <span class="token-badge">Token #${order.token_number}</span>
+            <span class="badge ${order.payment_method === 'online' ? 'badge-info' : 'badge-neutral'}" style="font-size: 11px;">
+              ${order.payment_method === 'online' ? 'UPI Paid' : 'Counter Cash'}
+            </span>
+          </div>
+
+          <div style="font-size: 12px; color: var(--color-text-muted); margin-bottom: var(--spacing-2);">
+            <strong>${order.student_name}</strong> (${order.college_identifier}) • ${formatKolkataTime(order.created_at)}
+          </div>
+
+          <div style="background: #f8fafc; border-radius: var(--radius-sm); padding: var(--spacing-2); margin-bottom: var(--spacing-2);">
+            ${itemsHtml}
+          </div>
+
+          ${order.special_instructions ? `
+            <div style="font-size: 11px; background: #fffbeb; border: 1px solid #fef3c7; padding: 4px 6px; border-radius: 4px; margin-bottom: 6px; color: #92400e;">
+              💬 Note: ${order.special_instructions}
+            </div>
+          ` : ''}
+
+          <div class="flex items-center justify-between" style="font-size: 13px; font-weight: var(--font-weight-bold);">
+            <span>Total:</span>
+            <span style="color: var(--color-primary-dark);">${formatINR(order.total_paise)}</span>
+          </div>
+
+          ${actionButtons}
+        </div>
+      `;
+    }
+
+    function attachActionListeners() {
+      // Accept Action
+      document.querySelectorAll('.btn-accept').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const orderId = e.target.dataset.id;
+          btn.disabled = true;
+          btn.textContent = 'Accepting...';
+          try {
+            const res = await fetch(`/api/v1/owner/orders/${orderId}/accept`, { method: 'POST' });
+            const json = await res.json();
+            if (json.success) {
+              showToast(json.message, 'success');
+              loadOrders();
+            } else {
+              showToast(json.error?.message || 'Failed to accept order', 'error');
+              btn.disabled = false;
+            }
+          } catch {
+            showToast('Network error accepting order', 'error');
+            btn.disabled = false;
+          }
+        });
+      });
+
+      // Reject Action (Opens modal)
+      document.querySelectorAll('.btn-reject').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const orderId = e.target.dataset.id;
+          const tokenNum = e.target.dataset.num;
+          document.getElementById('reject-order-id').value = orderId;
+          document.getElementById('reject-modal-subtext').textContent = 
+            `Please specify why Token #${tokenNum} is being rejected. The student will be notified and stock restored.`;
+          document.getElementById('reject-modal').style.display = 'flex';
+        });
+      });
+
+      // Advance Action (cooking -> ready -> collected)
+      document.querySelectorAll('.btn-advance').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const orderId = e.target.dataset.id;
+          const targetStatus = e.target.dataset.status;
+          btn.disabled = true;
+          try {
+            const res = await fetch(`/api/v1/owner/orders/${orderId}/status`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status: targetStatus }),
+            });
+            const json = await res.json();
+            if (json.success) {
+              showToast(json.message, 'success');
+              loadOrders();
+            } else {
+              showToast(json.error?.message || 'Status update failed', 'error');
+              btn.disabled = false;
+            }
+          } catch {
+            showToast('Network error updating status', 'error');
+            btn.disabled = false;
+          }
+        });
+      });
+    }
+
+    // Rejection Modal Handlers
+    document.getElementById('reject-cancel-btn').addEventListener('click', () => {
+      document.getElementById('reject-modal').style.display = 'none';
+    });
+
+    document.getElementById('reject-predefined').addEventListener('change', (e) => {
+      if (e.target.value !== 'Other reason') {
+        document.getElementById('reject-reason-text').value = e.target.value;
+      } else {
+        document.getElementById('reject-reason-text').value = '';
+        document.getElementById('reject-reason-text').focus();
+      }
+    });
+
+    document.getElementById('reject-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const orderId = document.getElementById('reject-order-id').value;
+      const reason = document.getElementById('reject-reason-text').value.trim();
+      const submitBtn = document.getElementById('reject-confirm-btn');
+
+      if (!reason) {
+        showToast('Please provide a rejection reason', 'warning');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Rejecting...';
+
+      try {
+        const res = await fetch(`/api/v1/owner/orders/${orderId}/reject`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reason }),
+        });
+        const json = await res.json();
+        if (json.success) {
+          showToast(json.message, 'info');
+          document.getElementById('reject-modal').style.display = 'none';
+          document.getElementById('reject-reason-text').value = '';
+          loadOrders();
+        } else {
+          showToast(json.error?.message || 'Rejection failed', 'error');
+        }
+      } catch {
+        showToast('Network error during rejection', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Confirm Rejection';
+      }
+    });
+
+    // Menu Management Tab Load
+    async function loadMenu() {
+      const tbody = document.getElementById('menu-table-body');
+      tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted" style="padding: var(--spacing-8);">Loading menu items...</td></tr>';
+      try {
+        const res = await fetch('/api/v1/owner/menu');
+        const json = await res.json();
+        if (json.success) {
+          shopCategories = json.data.categories || [];
+          const items = json.data.items || [];
+
+          // Populate category selector in Add Dish Modal
+          const catSelect = document.getElementById('dish-category');
+          catSelect.innerHTML = shopCategories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+          if (items.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted" style="padding: var(--spacing-8);">No dishes in this shop yet. Click "+ Add New Dish" above.</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = items.map(item => {
+            const cat = shopCategories.find(c => c.id === item.category_id)?.name || 'General';
+            return `
+              <tr style="border-bottom: 1px solid var(--color-border);">
+                <td style="padding: var(--spacing-3) var(--spacing-4);">
+                  <strong>${item.name}</strong>
+                  ${item.is_draft ? '<span class="badge badge-warning" style="font-size: 10px; margin-left: 6px;">Draft</span>' : ''}
+                  <div class="text-muted" style="font-size: 11px;">${item.description || ''}</div>
+                </td>
+                <td style="padding: var(--spacing-3) var(--spacing-4);">${cat}</td>
+                <td style="padding: var(--spacing-3) var(--spacing-4);">
+                  <span class="diet-indicator ${item.is_vegetarian ? 'diet-veg' : 'diet-non-veg'}" title="${item.is_vegetarian ? 'Veg' : 'Non-Veg'}"></span>
+                </td>
+                <td style="padding: var(--spacing-3) var(--spacing-4); font-weight: var(--font-weight-bold);">
+                  ${formatINR(item.price_paise)}
+                </td>
+                <td style="padding: var(--spacing-3) var(--spacing-4);">${item.stock_quantity}</td>
+                <td style="padding: var(--spacing-3) var(--spacing-4);">
+                  <span class="badge ${item.is_available ? 'badge-success' : 'badge-danger'}">
+                    ${item.is_available ? 'Available' : 'Out of Stock'}
+                  </span>
+                </td>
+                <td style="padding: var(--spacing-3) var(--spacing-4); text-align: right;">
+                  <button class="btn btn-outline btn-sm btn-toggle-avail" data-id="${item.id}" data-avail="${item.is_available}">
+                    ${item.is_available ? 'Mark Out of Stock' : 'Mark Available'}
+                  </button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+
+          document.querySelectorAll('.btn-toggle-avail').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+              const itemId = e.target.dataset.id;
+              const currentlyAvailable = e.target.dataset.avail === 'true';
+              btn.disabled = true;
+              try {
+                const res = await fetch(`/api/v1/owner/menu/${itemId}`, {
+                  method: 'PATCH',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ is_available: !currentlyAvailable }),
+                });
+                const resJson = await res.json();
+                if (resJson.success) {
+                  showToast(resJson.message, 'success');
+                  loadMenu();
+                } else {
+                  showToast(resJson.error?.message || 'Update failed', 'error');
+                  btn.disabled = false;
+                }
+              } catch {
+                showToast('Network error updating item', 'error');
+                btn.disabled = false;
+              }
+            });
+          });
+        }
+      } catch {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-danger" style="padding: var(--spacing-8);">Failed to load menu items.</td></tr>';
+      }
+    }
+
+    // Add Dish Modal
+    document.getElementById('add-dish-btn').addEventListener('click', () => {
+      document.getElementById('add-dish-modal').style.display = 'flex';
+    });
+    document.getElementById('add-dish-cancel-btn').addEventListener('click', () => {
+      document.getElementById('add-dish-modal').style.display = 'none';
+    });
+
+    document.getElementById('add-dish-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const categoryId = document.getElementById('dish-category').value;
+      const name = document.getElementById('dish-name').value.trim();
+      const desc = document.getElementById('dish-desc').value.trim();
+      const rupees = parseFloat(document.getElementById('dish-price-rupees').value);
+      const stock = parseInt(document.getElementById('dish-stock').value, 10);
+      const isVeg = document.getElementById('dish-diet').value === 'true';
+      const prepMinutes = parseInt(document.getElementById('dish-prep-time').value, 10);
+      const imageUrl = document.getElementById('dish-image-url').value.trim();
+
+      const submitBtn = document.getElementById('add-dish-submit-btn');
+      submitBtn.disabled = true;
+
+      try {
+        const res = await fetch('/api/v1/owner/menu', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            category_id: categoryId,
+            name,
+            description: desc,
+            price_paise: Math.round(rupees * 100),
+            stock_quantity: stock,
+            is_vegetarian: isVeg,
+            preparation_minutes: prepMinutes,
+            image_url: imageUrl || undefined,
+            is_draft: false,
+          }),
+        });
+
+        const json = await res.json();
+        if (json.success) {
+          showToast(json.message, 'success');
+          document.getElementById('add-dish-modal').style.display = 'none';
+          document.getElementById('add-dish-form').reset();
+          loadMenu();
+        } else {
+          showToast(json.error?.message || 'Failed to add dish', 'error');
+        }
+      } catch {
+        showToast('Network error saving dish', 'error');
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Analytics Tab Load
+    async function loadAnalytics() {
+      try {
+        const res = await fetch('/api/v1/owner/analytics');
+        const json = await res.json();
+        if (json.success && json.data) {
+          const d = json.data;
+          document.getElementById('ana-total-orders').textContent = d.total_orders_count;
+          document.getElementById('ana-completed-orders').textContent = d.completed_count;
+          document.getElementById('ana-rejected-orders').textContent = d.rejected_count;
+          document.getElementById('ana-revenue-inr').textContent = formatINR(d.verified_sales_paise);
+
+          const popBody = document.getElementById('analytics-popular-body');
+          if (d.popular_items && d.popular_items.length > 0) {
+            popBody.innerHTML = `
+              <ul style="list-style: none; display: flex; flex-direction: column; gap: var(--spacing-3);">
+                ${d.popular_items.map((item, idx) => `
+                  <li class="flex items-center justify-between" style="font-size: var(--font-size-sm); border-bottom: 1px solid var(--color-border); padding-bottom: 6px;">
+                    <span><strong>#${idx + 1}</strong> ${item.name}</span>
+                    <span class="badge badge-info">${item.count} Sold</span>
+                  </li>
+                `).join('')}
+              </ul>
+            `;
+          } else {
+            popBody.innerHTML = '<div class="text-center text-muted" style="padding: var(--spacing-4);">No sales records recorded yet today.</div>';
+          }
+        }
+      } catch (e) {
+        showToast('Error loading analytics', 'error');
+      }
+    }
+
+    // Refresh & Logout Buttons
+    document.getElementById('refresh-btn').addEventListener('click', () => {
+      loadOrders();
+      showToast('Queue refreshed', 'info', 1000);
+    });
+
+    document.getElementById('signout-btn').addEventListener('click', () => {
+      signOutUser();
+    });
+
+    // Initial Load
+    await loadShopProfile();
+    await loadOrders();
+
+    // Auto-refresh queue every 10 seconds for real-time order updates
+    setInterval(() => {
+      if (viewOrders.style.display !== 'none') {
+        loadOrders();
+      }
+    }, 10000);
+  </script>
+</body>
+</html>

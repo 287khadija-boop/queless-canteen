@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accountant Financial Console | Quesless Campus — MRECW</title>
+  
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+</head>
+<body style="background-color: #f8fafc;">
+
+  <!-- Top Header Navigation -->
+  <header class="site-header" style="border-bottom: 2px solid #0d9488;">
+    <div class="container header-inner">
+      <div class="brand-wrapper">
+        <div class="brand-logo-badge" style="background: #0f766e;">AC</div>
+        <div class="brand-info">
+          <span class="brand-name">Quesless Campus Accounts</span>
+          <span class="brand-subtext">Malla Reddy Engineering College for Women</span>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <span class="badge badge-success" id="accountant-badge">Accounts Officer</span>
+        <button id="signout-btn" class="btn btn-secondary btn-sm">Sign Out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content" style="padding: var(--spacing-8) 0;">
+    <div class="container">
+      
+      <!-- Dashboard Title & Refresh -->
+      <div class="flex items-center justify-between" style="margin-bottom: var(--spacing-8); flex-wrap: wrap; gap: var(--spacing-4);">
+        <div>
+          <h1 style="font-size: var(--font-size-3xl); font-weight: var(--font-weight-bold); color: #0f172a;">Financial Audits & Revenue Reports</h1>
+          <p class="text-muted" id="user-subtext">Least-privilege financial oversight: counter cash, online receipts, and daily sales reconciliations.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="badge badge-info">Fiscal Safe View</span>
+          <button id="refresh-finance-btn" class="btn btn-outline btn-sm">🔄 Refresh Data</button>
+        </div>
+      </div>
+
+      <!-- Financial Metric Cards -->
+      <div class="grid-4" style="margin-bottom: var(--spacing-8);">
+        <div class="card">
+          <div class="card-body">
+            <span class="text-muted" style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); text-transform: uppercase;">Total Collections (Today)</span>
+            <div id="stat-total-revenue" style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); margin: var(--spacing-2) 0; color: #0f766e;">₹18,450.00</div>
+            <span class="badge badge-success" style="font-size: 11px;">100% Reconciled</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <span class="text-muted" style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); text-transform: uppercase;">Counter Cash Collections</span>
+            <div id="stat-counter-cash" style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); margin: var(--spacing-2) 0; color: #1e293b;">₹7,200.00</div>
+            <span class="badge badge-neutral" style="font-size: 11px;">Counter Register</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <span class="text-muted" style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); text-transform: uppercase;">Online Digital Pre-orders</span>
+            <div id="stat-online-revenue" style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); margin: var(--spacing-2) 0; color: #3b82f6;">₹11,250.00</div>
+            <span class="badge badge-info" style="font-size: 11px;">Gateway Settled</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <span class="text-muted" style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); text-transform: uppercase;">Orders Processed</span>
+            <div id="stat-order-count" style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); margin: var(--spacing-2) 0; color: #0284c7;">142</div>
+            <span class="badge badge-neutral" style="font-size: 11px;">Zero Variance</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment & Transaction Ledger -->
+      <div class="card" style="margin-bottom: var(--spacing-8);">
+        <div class="card-header flex items-center justify-between" style="background-color: var(--color-surface-muted);">
+          <h3 style="font-size: var(--font-size-base); font-weight: var(--font-weight-bold);">Recent Settled Transactions</h3>
+          <span class="badge badge-neutral">Audited Log</span>
+        </div>
+        <div class="card-body" style="padding: 0;">
+          <div style="overflow-x: auto;">
+            <table class="table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: var(--font-size-sm);">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--color-border); background-color: #f8fafc;">
+                  <th style="padding: var(--spacing-3) var(--spacing-4);">Transaction ID</th>
+                  <th style="padding: var(--spacing-3) var(--spacing-4);">Time</th>
+                  <th style="padding: var(--spacing-3) var(--spacing-4);">Payment Method</th>
+                  <th style="padding: var(--spacing-3) var(--spacing-4);">Status</th>
+                  <th style="padding: var(--spacing-3) var(--spacing-4); text-align: right;">Amount (INR)</th>
+                </tr>
+              </thead>
+              <tbody id="transaction-tbody">
+                <tr style="border-bottom: 1px solid var(--color-border);">
+                  <td style="padding: var(--spacing-3) var(--spacing-4); font-family: monospace;">PAY-20261028-091</td>
+                  <td style="padding: var(--spacing-3) var(--spacing-4);">10:45 AM</td>
+                  <td style="padding: var(--spacing-3) var(--spacing-4);"><span class="badge badge-info">Online (UPI)</span></td>
+                  <td style="padding: var(--spacing-3) var(--spacing-4);"><span class="badge badge-success">Successful</span></td>
+                  <td style="padding: var(--spacing-3) var(--spacing-4); text-align: right; font-weight: var(--font-weight-bold);">₹135.00</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--color-border);">
+                  <td style="padding: var(--spacing-3) var(--spacing-4); font-family: monospace;">PAY-20261028-090</td>
+                  <td style="padding: var(--spacing-3) var(--spacing-4);">10:42 AM</td>
+                  <td style="padding: var(--spacing-3) var(--spacing-4);"><span class="badge badge-neutral">Counter Cash</span></td>
+                  <td style="padding: var(--spacing-3) var(--spacing-4);"><span class="badge badge-success">Successful</span></td>
+                  <td style="padding: var(--spacing-3) var(--spacing-4); text-align: right; font-weight: var(--font-weight-bold);">₹45.00</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--color-border);">
+                  <td style="padding: var(--spacing-3) var(--spacing-4); font-family: monospace;">PAY-20261028-089</td>
+                  <td style="padding: var(--spacing-3) var(--spacing-4);">10:38 AM</td>
+                  <td style="padding: var(--spacing-3) var(--spacing-4);"><span class="badge badge-info">Online (UPI)</span></td>
+                  <td style="padding: var(--spacing-3) var(--spacing-4);"><span class="badge badge-success">Successful</span></td>
+                  <td style="padding: var(--spacing-3) var(--spacing-4); text-align: right; font-weight: var(--font-weight-bold);">₹90.00</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--color-border);">
+                  <td style="padding: var(--spacing-3) var(--spacing-4); font-family: monospace;">PAY-20261028-088</td>
+                  <td style="padding: var(--spacing-3) var(--spacing-4);">10:30 AM</td>
+                  <td style="padding: var(--spacing-3) var(--spacing-4);"><span class="badge badge-neutral">Counter Cash</span></td>
+                  <td style="padding: var(--spacing-3) var(--spacing-4);"><span class="badge badge-success">Successful</span></td>
+                  <td style="padding: var(--spacing-3) var(--spacing-4); text-align: right; font-weight: var(--font-weight-bold);">₹60.00</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scope of Access Notice -->
+      <div style="padding: var(--spacing-4); background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius-lg); font-size: var(--font-size-xs); color: #166534;">
+        🔒 <strong>Least-Privilege Role Compliance:</strong> The Accountant role has read-only access strictly confined to financial summaries, daily revenue reconciliation, and payment ledgers. Privileges do not permit editing menu items, altering stock balances, modifying student records, or granting administrative permissions.
+      </div>
+
+    </div>
+  </main>
+
+  <div id="toast-container"></div>
+
+  <script src="/js/config.js"></script>
+  <script type="module" src="/js/common.js"></script>
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module">
+    import { requireAuth, signOutUser } from '/js/auth.js';
+    import { showToast } from '/js/common.js';
+
+    // Protect route: only accountant and admin roles permitted
+    const authState = await requireAuth(['accountant', 'admin']);
+    if (authState) {
+      const { profile } = authState;
+      document.getElementById('accountant-badge').textContent = `Accountant: ${profile.full_name || 'Finance Officer'}`;
+      document.getElementById('user-subtext').textContent = 
+        `Officer ID: ${profile.college_identifier || 'ACCT-01'} | Role: ${profile.role.toUpperCase()} | Approval: ${profile.approval_status || 'Approved'}`;
+    }
+
+    document.getElementById('signout-btn').addEventListener('click', () => {
+      signOutUser();
+    });
+
+    async function loadFinanceData() {
+      try {
+        const res = await fetch('/api/v1/finance/reconciliation');
+        const json = await res.json();
+        if (json.success && json.data) {
+          const d = json.data;
+          document.getElementById('stat-total-revenue').textContent = `₹${d.total_collections_inr}`;
+          document.getElementById('stat-counter-cash').textContent = `₹${d.counter_cash_inr}`;
+          document.getElementById('stat-online-revenue').textContent = `₹${d.online_revenue_inr}`;
+        }
+      } catch (e) {
+        console.warn('Finance sync warning', e);
+      }
+    }
+
+    document.getElementById('refresh-finance-btn').addEventListener('click', () => {
+      loadFinanceData();
+      showToast('Financial summaries and reconciliation ledger updated', 'success', 2000);
+    });
+
+    loadFinanceData();
+  </script>
+</body>
+</html>

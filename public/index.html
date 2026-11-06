@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quesless Campus | Malla Reddy Engineering College for Women</title>
+  <meta name="description" content="Official Canteen Pre-Ordering & Digital Queue Management System for Malla Reddy Engineering College for Women (MRECW). Skip physical queues and collect food faster.">
+  
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="brand-wrapper" aria-label="Quesless Campus Homepage">
+        <div class="brand-logo-badge">QC</div>
+        <div class="brand-info">
+          <span class="brand-name">Quesless Campus</span>
+          <span class="brand-subtext">Malla Reddy Engineering College for Women</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav aria-label="Main Navigation">
+        <ul class="nav-menu">
+          <li><a href="/" class="nav-link active">Home</a></li>
+          <li><a href="#shops" class="nav-link">Campus Shops</a></li>
+          <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
+          <li><a href="#featured" class="nav-link">Popular Dishes</a></li>
+          <li><a href="#hours" class="nav-link">Hours</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="/login.html" class="btn btn-secondary btn-sm">Sign In</a>
+        <a href="/register.html" class="btn btn-primary btn-sm">Get Started</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="container hero-grid">
+        <div>
+          <div class="hero-badge">
+            <span>✨</span> MRECW Canteen Digital Pre-Order System
+          </div>
+          <h1 class="hero-title">
+            Skip the physical lines.<br>
+            <span>Pre-order food</span> with digital tokens.
+          </h1>
+          <p class="hero-subtitle">
+            Order your favorite meals between lectures, receive an instant digital token, monitor kitchen preparation in real-time, and collect without standing in crowded queues.
+          </p>
+          <div class="hero-actions">
+            <a href="/register.html" class="btn btn-primary btn-lg">Order Food Now</a>
+            <a href="#how-it-works" class="btn btn-secondary btn-lg">See How It Works</a>
+          </div>
+        </div>
+
+        <!-- Interactive Token & Status Preview -->
+        <div>
+          <div class="token-card">
+            <div class="badge badge-success" style="margin-bottom: var(--spacing-3);">Live Token Queue</div>
+            <div class="token-subtext">Sample Digital Token</div>
+            <div class="token-number">#A-042</div>
+            <div class="badge badge-warning" style="margin-bottom: var(--spacing-4);">Status: Preparing</div>
+            <p class="token-subtext">Estimated pickup in <strong>6–8 minutes</strong> at MRECW Canteen Counter 1</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Operating Hours Banner -->
+    <section id="hours" style="padding: var(--spacing-8) 0;">
+      <div class="container">
+        <div class="operational-banner flex items-center justify-between" style="flex-wrap: wrap; gap: var(--spacing-4);">
+          <div class="flex items-center gap-4">
+            <div style="font-size: 2rem;">⏰</div>
+            <div>
+              <h3 style="font-size: var(--font-size-base); font-weight: var(--font-weight-bold);">Canteen Operating Hours</h3>
+              <p class="text-muted" style="font-size: var(--font-size-sm);">9:00 AM – 4:00 PM (Monday to Saturday) | Campus Local Time (IST)</p>
+            </div>
+          </div>
+          <div id="canteen-status-badge">
+            <span class="badge badge-info">Checking status...</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Explore MRECW Canteen Shops Section -->
+    <section id="shops" style="padding: var(--spacing-12) 0; background-color: var(--color-surface-muted); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);">
+      <div class="container">
+        <div class="flex items-center justify-between" style="margin-bottom: var(--spacing-8); flex-wrap: wrap; gap: var(--spacing-4);">
+          <div>
+            <div class="hero-badge" style="margin-bottom: var(--spacing-2);">🍽️ Independent Campus Outlets</div>
+            <h2 style="font-size: var(--font-size-3xl); font-weight: var(--font-weight-bold);">Explore MRECW Canteen Shops</h2>
+            <p class="text-muted">Choose your favorite canteen outlet, browse their live menu, and pre-order to skip queues.</p>
+          </div>
+          <span class="badge badge-success">5 Outlets Serving Daily</span>
+        </div>
+
+        <div class="grid-3" id="shops-grid-container">
+          <!-- Populated dynamically via /api/v1/shops or fallback cards -->
+          <div class="card card-hover" style="overflow: hidden; display: flex; flex-direction: column;">
+            <div style="height: 180px; overflow: hidden; background: #e2e8f0; position: relative;">
+              <img src="https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=800&auto=format&fit=crop&q=80" 
+                   alt="KBR Chicken Campus Shop Cover" 
+                   style="width: 100%; height: 100%; object-fit: cover;"
+                   onerror="window.Quesless?.handleFoodImageError(this, 'KBR Chicken')">
+              <span class="badge badge-success" style="position: absolute; top: 12px; right: 12px;">Open 09:00 - 16:00</span>
+            </div>
+            <div class="card-body" style="flex: 1; display: flex; flex-direction: column;">
+              <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-1);">KBR Chicken</h3>
+              <p class="text-muted" style="font-size: var(--font-size-sm); margin-bottom: var(--spacing-4); flex: 1;">
+                Affordable, crispy chicken fast food, burgers, popcorn & wings designed for campus students.
+              </p>
+              <a href="/student/menu.html?shop=a0000000-0000-0000-0000-000000000001" class="btn btn-primary btn-block btn-sm">View Menu &rarr;</a>
+            </div>
+          </div>
+
+          <div class="card card-hover" style="overflow: hidden; display: flex; flex-direction: column;">
+            <div style="height: 180px; overflow: hidden; background: #e2e8f0; position: relative;">
+              <img src="https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?w=800&auto=format&fit=crop&q=80" 
+                   alt="Dragon Hub Campus Fast Food Cover" 
+                   style="width: 100%; height: 100%; object-fit: cover;"
+                   onerror="window.Quesless?.handleFoodImageError(this, 'Dragon Hub')">
+              <span class="badge badge-success" style="position: absolute; top: 12px; right: 12px;">Open 09:00 - 16:00</span>
+            </div>
+            <div class="card-body" style="flex: 1; display: flex; flex-direction: column;">
+              <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-1);">Dragon Hub</h3>
+              <p class="text-muted" style="font-size: var(--font-size-sm); margin-bottom: var(--spacing-4); flex: 1;">
+                Popular fast-food hub serving noodles, fried rice, burgers, momos, pizzas and crispy bites.
+              </p>
+              <a href="/student/menu.html?shop=a0000000-0000-0000-0000-000000000002" class="btn btn-primary btn-block btn-sm">View Menu &rarr;</a>
+            </div>
+          </div>
+
+          <div class="card card-hover" style="overflow: hidden; display: flex; flex-direction: column;">
+            <div style="height: 180px; overflow: hidden; background: #e2e8f0; position: relative;">
+              <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&auto=format&fit=crop&q=80" 
+                   alt="Brown Bear Campus Bakery Cover" 
+                   style="width: 100%; height: 100%; object-fit: cover;"
+                   onerror="window.Quesless?.handleFoodImageError(this, 'Brown Bear')">
+              <span class="badge badge-warning" style="position: absolute; top: 12px; right: 12px;">Draft Menu</span>
+            </div>
+            <div class="card-body" style="flex: 1; display: flex; flex-direction: column;">
+              <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-1);">Brown Bear</h3>
+              <p class="text-muted" style="font-size: var(--font-size-sm); margin-bottom: var(--spacing-4); flex: 1;">
+                Dedicated campus bakery and cafe outlet. (Menu and pricing awaiting owner confirmation).
+              </p>
+              <a href="/student/menu.html?shop=a0000000-0000-0000-0000-000000000003" class="btn btn-outline btn-block btn-sm">View Menu &rarr;</a>
+            </div>
+          </div>
+
+          <div class="card card-hover" style="overflow: hidden; display: flex; flex-direction: column;">
+            <div style="height: 180px; overflow: hidden; background: #e2e8f0; position: relative;">
+              <img src="https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=800&auto=format&fit=crop&q=80" 
+                   alt="Milkshakes Campus Beverage Shop Cover" 
+                   style="width: 100%; height: 100%; object-fit: cover;"
+                   onerror="window.Quesless?.handleFoodImageError(this, 'Milkshakes')">
+              <span class="badge badge-success" style="position: absolute; top: 12px; right: 12px;">Open 09:00 - 16:00</span>
+            </div>
+            <div class="card-body" style="flex: 1; display: flex; flex-direction: column;">
+              <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-1);">Milkshakes</h3>
+              <p class="text-muted" style="font-size: var(--font-size-sm); margin-bottom: var(--spacing-4); flex: 1;">
+                Refreshing thick milkshakes, cold coffees, seasonal fresh juices, smoothies and faloodas.
+              </p>
+              <a href="/student/menu.html?shop=a0000000-0000-0000-0000-000000000004" class="btn btn-primary btn-block btn-sm">View Menu &rarr;</a>
+            </div>
+          </div>
+
+          <div class="card card-hover" style="overflow: hidden; display: flex; flex-direction: column;">
+            <div style="height: 180px; overflow: hidden; background: #e2e8f0; position: relative;">
+              <img src="https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800&auto=format&fit=crop&q=80" 
+                   alt="Wraps Campus Food Outlet Cover" 
+                   style="width: 100%; height: 100%; object-fit: cover;"
+                   onerror="window.Quesless?.handleFoodImageError(this, 'Wraps')">
+              <span class="badge badge-success" style="position: absolute; top: 12px; right: 12px;">Open 09:00 - 16:00</span>
+            </div>
+            <div class="card-body" style="flex: 1; display: flex; flex-direction: column;">
+              <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-1);">Wraps</h3>
+              <p class="text-muted" style="font-size: var(--font-size-sm); margin-bottom: var(--spacing-4); flex: 1;">
+                Freshly rolled vegetable, paneer, egg and chicken wraps packed with authentic flavours and crunch.
+              </p>
+              <a href="/student/menu.html?shop=a0000000-0000-0000-0000-000000000005" class="btn btn-primary btn-block btn-sm">View Menu &rarr;</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3-Step Explanation -->
+    <section id="how-it-works" style="padding: var(--spacing-12) 0; background-color: var(--color-surface); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);">
+      <div class="container">
+        <div class="text-center" style="max-width: 600px; margin: 0 auto var(--spacing-10);">
+          <h2 style="font-size: var(--font-size-3xl); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-2);">How Digital Ordering Works</h2>
+          <p class="text-muted">Three simple steps to save your break time and enjoy fresh meals on campus.</p>
+        </div>
+
+        <div class="grid-3">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <h3 class="step-title">Browse & Pre-Order</h3>
+            <p class="step-desc">Select your breakfast, lunch, or snacks from the live menu. Choose immediate preparation (ASAP) or schedule a pickup slot.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <h3 class="step-title">Receive Digital Token</h3>
+            <p class="step-desc">Confirm your order via counter payment or instant online checkout. An atomic, unique token is generated for the kitchen queue.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <h3 class="step-title">Collect & Enjoy</h3>
+            <p class="step-desc">Track real-time status updates from your phone. Walk up to the pickup counter only when your token is marked "Ready".</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Menu Preview -->
+    <section id="featured" style="padding: var(--spacing-12) 0;">
+      <div class="container">
+        <div class="flex items-center justify-between" style="margin-bottom: var(--spacing-8); flex-wrap: wrap; gap: var(--spacing-4);">
+          <div>
+            <h2 style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold);">Popular Campus Favorites</h2>
+            <p class="text-muted">Freshly prepared daily at MRECW campus canteen.</p>
+          </div>
+          <a href="/login.html" class="btn btn-outline btn-sm">View Full Menu &rarr;</a>
+        </div>
+
+        <div class="grid-4">
+          <!-- Card 1: Masala Dosa -->
+          <div class="card card-hover" style="overflow: hidden;">
+            <div style="height: 160px; overflow: hidden; background-color: #f1f5f9;">
+              <img src="https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=600&auto=format&fit=crop&q=80" 
+                   alt="Freshly prepared crispy South Indian Masala Dosa with coconut chutney and sambar" 
+                   loading="lazy" 
+                   style="width: 100%; height: 100%; object-fit: cover; display: block;"
+                   onerror="window.Quesless?.handleFoodImageError(this, 'Masala Dosa')">
+            </div>
+            <div class="card-body">
+              <div class="flex items-center justify-between" style="margin-bottom: var(--spacing-2);">
+                <span class="diet-indicator diet-veg" title="Vegetarian"></span>
+                <span class="badge badge-success">Available</span>
+              </div>
+              <h4 style="font-weight: var(--font-weight-semibold); margin-bottom: var(--spacing-1);">Masala Dosa</h4>
+              <p class="text-muted" style="font-size: var(--font-size-xs); margin-bottom: var(--spacing-3);">Crispy golden crepe filled with spiced potato masala, served with fresh coconut chutney.</p>
+              <div class="flex items-center justify-between">
+                <span style="font-weight: var(--font-weight-bold); color: var(--color-primary-dark);">₹45.00</span>
+                <a href="/login.html" class="btn btn-primary btn-sm">Order</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Veg Fried Rice with Manchurian -->
+          <div class="card card-hover" style="overflow: hidden;">
+            <div style="height: 160px; overflow: hidden; background-color: #f1f5f9;">
+              <img src="https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=600&auto=format&fit=crop&q=80" 
+                   alt="Wok-tossed Vegetable Fried Rice served with savory vegetable Manchurian" 
+                   loading="lazy" 
+                   style="width: 100%; height: 100%; object-fit: cover; display: block;"
+                   onerror="window.Quesless?.handleFoodImageError(this, 'Veg Fried Rice')">
+            </div>
+            <div class="card-body">
+              <div class="flex items-center justify-between" style="margin-bottom: var(--spacing-2);">
+                <span class="diet-indicator diet-veg" title="Vegetarian"></span>
+                <span class="badge badge-success">Available</span>
+              </div>
+              <h4 style="font-weight: var(--font-weight-semibold); margin-bottom: var(--spacing-1);">Veg Fried Rice & Manchurian</h4>
+              <p class="text-muted" style="font-size: var(--font-size-xs); margin-bottom: var(--spacing-3);">Aromatic wok-tossed basmati rice served with crisp vegetable Manchurian gravy.</p>
+              <div class="flex items-center justify-between">
+                <span style="font-weight: var(--font-weight-bold); color: var(--color-primary-dark);">₹85.00</span>
+                <a href="/login.html" class="btn btn-primary btn-sm">Order</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Paneer Grilled Sandwich -->
+          <div class="card card-hover" style="overflow: hidden;">
+            <div style="height: 160px; overflow: hidden; background-color: #f1f5f9;">
+              <img src="https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=600&auto=format&fit=crop&q=80" 
+                   alt="Toasted golden Paneer Grilled Sandwich with herbs and melted cheese" 
+                   loading="lazy" 
+                   style="width: 100%; height: 100%; object-fit: cover; display: block;"
+                   onerror="window.Quesless?.handleFoodImageError(this, 'Paneer Grilled Sandwich')">
+            </div>
+            <div class="card-body">
+              <div class="flex items-center justify-between" style="margin-bottom: var(--spacing-2);">
+                <span class="diet-indicator diet-veg" title="Vegetarian"></span>
+                <span class="badge badge-success">Available</span>
+              </div>
+              <h4 style="font-weight: var(--font-weight-semibold); margin-bottom: var(--spacing-1);">Paneer Grilled Sandwich</h4>
+              <p class="text-muted" style="font-size: var(--font-size-xs); margin-bottom: var(--spacing-3);">Golden butter-toasted sandwich stuffed with spiced cottage cheese and peppers.</p>
+              <div class="flex items-center justify-between">
+                <span style="font-weight: var(--font-weight-bold); color: var(--color-primary-dark);">₹60.00</span>
+                <a href="/login.html" class="btn btn-primary btn-sm">Order</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4: South Indian Filter Coffee -->
+          <div class="card card-hover" style="overflow: hidden;">
+            <div style="height: 160px; overflow: hidden; background-color: #f1f5f9;">
+              <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&auto=format&fit=crop&q=80" 
+                   alt="Hot traditional South Indian Filter Coffee served frothy in a tumbler" 
+                   loading="lazy" 
+                   style="width: 100%; height: 100%; object-fit: cover; display: block;"
+                   onerror="window.Quesless?.handleFoodImageError(this, 'Filter Coffee')">
+            </div>
+            <div class="card-body">
+              <div class="flex items-center justify-between" style="margin-bottom: var(--spacing-2);">
+                <span class="diet-indicator diet-veg" title="Vegetarian"></span>
+                <span class="badge badge-success">Available</span>
+              </div>
+              <h4 style="font-weight: var(--font-weight-semibold); margin-bottom: var(--spacing-1);">South Indian Filter Coffee</h4>
+              <p class="text-muted" style="font-size: var(--font-size-xs); margin-bottom: var(--spacing-3);">Authentic chicory filter coffee decoction brewed with hot full-cream milk.</p>
+              <div class="flex items-center justify-between">
+                <span style="font-weight: var(--font-weight-bold); color: var(--color-primary-dark);">₹20.00</span>
+                <a href="/login.html" class="btn btn-primary btn-sm">Order</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <div class="brand-wrapper" style="margin-bottom: var(--spacing-3);">
+          <div class="brand-logo-badge" style="width: 2.25rem; height: 2.25rem; font-size: 1rem;">QC</div>
+          <span class="brand-name" style="font-size: var(--font-size-lg);">Quesless Campus</span>
+        </div>
+        <p class="text-muted" style="font-size: var(--font-size-sm); margin-bottom: var(--spacing-3);">
+          An intelligent queue-free canteen pre-ordering ecosystem engineered for Malla Reddy Engineering College for Women.
+        </p>
+      </div>
+
+      <div>
+        <h4 style="font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-3);">Portals</h4>
+        <ul style="list-style: none; font-size: var(--font-size-sm); display: flex; flex-direction: column; gap: var(--spacing-2);">
+          <li><a href="/login.html" class="text-muted">Student Portal</a></li>
+          <li><a href="/login.html?role=staff" class="text-muted">Staff Kitchen Portal</a></li>
+          <li><a href="/login.html?role=admin" class="text-muted">Admin Console</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 style="font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-3);">Operations</h4>
+        <ul style="list-style: none; font-size: var(--font-size-sm); display: flex; flex-direction: column; gap: var(--spacing-2);">
+          <li class="text-muted">Mon–Sat: 9:00 AM – 4:00 PM</li>
+          <li class="text-muted">Peak Hours: 12:30 PM – 2:00 PM</li>
+          <li class="text-muted">Currency: INR (₹)</li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 style="font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-3);">Campus Location</h4>
+        <p class="text-muted" style="font-size: var(--font-size-sm);">
+          Malla Reddy Engineering College for Women (MRECW)<br>
+          Maisammaguda, Dhulapally, Secunderabad, Telangana 500100
+        </p>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <span>&copy; 2026 Malla Reddy Engineering College for Women. All rights reserved.</span>
+      <span>Designed for Zero-Queue Campus Dining.</span>
+    </div>
+  </footer>
+
+  <script src="/js/config.js"></script>
+  <script type="module" src="/js/common.js"></script>
+  <script type="module">
+    import { checkCanteenOperatingHours } from '/js/common.js';
+
+    // Live update operating hours badge on landing page
+    const statusBox = document.getElementById('canteen-status-badge');
+    if (statusBox) {
+      const { isOpen, message } = checkCanteenOperatingHours();
+      statusBox.innerHTML = isOpen
+        ? `<span class="badge badge-success">● ${message}</span>`
+        : `<span class="badge badge-warning">● ${message}</span>`;
+    }
+  </script>
+</body>
+</html>

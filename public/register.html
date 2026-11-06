@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Registration | Quesless Campus — MRECW</title>
+  
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="brand-wrapper">
+        <div class="brand-logo-badge">QC</div>
+        <div class="brand-info">
+          <span class="brand-name">Quesless Campus</span>
+          <span class="brand-subtext">Malla Reddy Engineering College for Women</span>
+        </div>
+      </a>
+      <div class="nav-actions">
+        <a href="/login.html" class="btn btn-secondary btn-sm">Sign In</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1 id="reg-title">Create Student Account</h1>
+        <p>Join MRECW Quesless Campus to pre-order food and avoid physical queues.</p>
+      </div>
+
+      <!-- Account Type Selection Tabs -->
+      <div class="role-pills" id="role-selector" role="tablist">
+        <button type="button" class="role-pill active" data-role="student" role="tab">Student</button>
+        <button type="button" class="role-pill" data-role="staff" role="tab">Staff</button>
+        <button type="button" class="role-pill" data-role="accountant" role="tab">Accountant</button>
+      </div>
+
+      <div id="role-notice" style="display: none; margin-bottom: var(--spacing-4); padding: var(--spacing-3); font-size: var(--font-size-xs); background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: var(--radius-md); color: #1e40af;">
+        ℹ️ Staff and Accountant registrations require administrator verification and approval before privileged portal access is granted.
+      </div>
+
+      <form id="register-form" novalidate>
+        <div class="form-group">
+          <label for="full_name" class="form-label">Full Name</label>
+          <input type="text" id="full_name" class="form-input" placeholder="e.g. Khadija Begum" required autocomplete="name">
+          <div id="name-error" class="form-error" style="display: none;"></div>
+        </div>
+
+        <div class="form-group" id="identifier-group">
+          <label for="college_identifier" class="form-label" id="identifier-label">Hall Ticket / Roll Number</label>
+          <input type="text" id="college_identifier" class="form-input" placeholder="e.g. 21RH1A0501" required>
+          <div class="form-helper" id="identifier-helper">Your official MRECW roll number for order verification at pickup counter.</div>
+          <div id="roll-error" class="form-error" style="display: none;"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="email" class="form-label" id="email-label">College Email Address</label>
+          <input type="email" id="email" class="form-input" placeholder="student@mrecw.ac.in" required autocomplete="email">
+          <div class="form-helper" id="email-helper">Use your student email address.</div>
+          <div id="email-error" class="form-error" style="display: none;"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" id="password" class="form-input" placeholder="At least 6 characters" minlength="6" required autocomplete="new-password">
+          <div class="form-helper">Use at least 6 characters with a mix of letters and numbers.</div>
+          <div id="password-error" class="form-error" style="display: none;"></div>
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn btn-primary btn-block btn-lg" style="margin-top: var(--spacing-6);">
+          Register Account
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        Already registered? <a href="/login.html" class="font-semibold">Sign In</a>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast-container"></div>
+
+  <script src="/js/config.js"></script>
+  <script type="module" src="/js/common.js"></script>
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module">
+    import { showToast } from '/js/common.js';
+    import { signUpUser } from '/js/auth.js';
+
+    let currentRole = 'student';
+    const rolePills = document.querySelectorAll('.role-pill');
+    const roleNotice = document.getElementById('role-notice');
+    const identifierLabel = document.getElementById('identifier-label');
+    const identifierHelper = document.getElementById('identifier-helper');
+    const emailHelper = document.getElementById('email-helper');
+
+    rolePills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        rolePills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        currentRole = pill.dataset.role;
+
+        if (currentRole === 'student') {
+          roleNotice.style.display = 'none';
+          identifierLabel.textContent = 'Hall Ticket / Roll Number';
+          identifierHelper.textContent = 'Your official MRECW roll number for order verification at pickup counter.';
+          emailHelper.textContent = 'Use your college or student email address.';
+        } else {
+          roleNotice.style.display = 'block';
+          identifierLabel.textContent = 'Staff / Employee ID (Optional)';
+          identifierHelper.textContent = 'Your college staff or employee ID if assigned.';
+          emailHelper.textContent = 'You may use an approved college email or your personal email address.';
+        }
+      });
+    });
+
+    const form = document.getElementById('register-form');
+    const submitBtn = document.getElementById('submit-btn');
+
+    function clearErrors() {
+      ['name-error', 'roll-error', 'email-error', 'password-error'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.textContent = ''; el.style.display = 'none'; }
+      });
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearErrors();
+
+      const fullName = document.getElementById('full_name').value.trim();
+      const collegeIdentifier = document.getElementById('college_identifier').value.trim().toUpperCase();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      // Client-side validations
+      let hasError = false;
+
+      if (!fullName || fullName.length < 2) {
+        const el = document.getElementById('name-error');
+        el.textContent = 'Please enter your full name (at least 2 characters).';
+        el.style.display = 'block';
+        hasError = true;
+      }
+
+      if (currentRole === 'student' && (!collegeIdentifier || collegeIdentifier.length < 4)) {
+        const el = document.getElementById('roll-error');
+        el.textContent = 'Please enter a valid college roll number (e.g. 21RH1A0501).';
+        el.style.display = 'block';
+        hasError = true;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email || !emailRegex.test(email)) {
+        const el = document.getElementById('email-error');
+        el.textContent = 'Please enter a valid email address.';
+        el.style.display = 'block';
+        hasError = true;
+      }
+
+      if (!password || password.length < 6) {
+        const el = document.getElementById('password-error');
+        el.textContent = 'Password must be at least 6 characters.';
+        el.style.display = 'block';
+        hasError = true;
+      }
+
+      if (hasError) return;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Registering...';
+
+      try {
+        const resJson = await signUpUser({
+          email,
+          password,
+          fullName,
+          collegeIdentifier: collegeIdentifier || null,
+          role: currentRole,
+        });
+
+        const data = resJson.data;
+
+        if (currentRole !== 'student') {
+          showToast(resJson.message || 'Registration submitted! Awaiting administrator approval.', 'info', 6000);
+          setTimeout(() => {
+            window.location.href = `/login.html?role=${currentRole}`;
+          }, 2500);
+        } else if (data?.session?.access_token) {
+          showToast('Account registered successfully! Redirecting to student portal...', 'success', 2500);
+          setTimeout(() => {
+            window.location.href = '/student/dashboard.html';
+          }, 1200);
+        } else {
+          showToast('Registration submitted! If confirmation is enabled, check your email inbox before logging in.', 'success', 5000);
+          setTimeout(() => {
+            window.location.href = '/login.html';
+          }, 2000);
+        }
+      } catch (err) {
+        showToast(err.message || 'Registration failed. Please check your inputs.', 'error', 6000);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Register Account';
+      }
+    });
+  </script>
+</body>
+</html>
